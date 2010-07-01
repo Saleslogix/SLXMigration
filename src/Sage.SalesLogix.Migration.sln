@@ -23,35 +23,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "SageAppArchitect", "..\..\.
 		AttachLaunchAction = No
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sage.SalesLogix.Migration.Installation", "Installation\Sage.SalesLogix.Migration.Installation.csproj", "{1B927CFA-10B0-4057-971B-C7CDD4982052}"
-EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://devtfserver.testlogix.com:8080/
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Sage.SalesLogix.Migration.csproj
-		SccLocalPath1 = .
-		SccProjectUniqueName2 = Forms\\Sage.SalesLogix.Migration.Forms.csproj
-		SccProjectName2 = Forms
-		SccLocalPath2 = Forms
-		SccProjectUniqueName3 = Script\\Sage.SalesLogix.Migration.Script.csproj
-		SccProjectName3 = Script
-		SccLocalPath3 = Script
-		SccProjectUniqueName4 = Test\\Sage.SalesLogix.Migration.Tests.csproj
-		SccProjectName4 = Test
-		SccLocalPath4 = Test
-		SccProjectUniqueName5 = Module\\Sage.SalesLogix.Migration.Module.csproj
-		SccProjectName5 = Module
-		SccLocalPath5 = Module
-		SccProjectUniqueName6 = Setup\\Setup.vdproj
-		SccProjectName6 = Setup
-		SccLocalPath6 = Setup
-		SccProjectUniqueName7 = Installation\\Sage.SalesLogix.Migration.Installation.csproj
-		SccProjectName7 = Installation
-		SccLocalPath7 = Installation
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -79,10 +51,6 @@ Global
 		{B680B1FD-DC13-4518-9F5A-E0BAD54B5439}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F33BA1CA-4D16-4B97-A17E-5B5AA562A947}.Debug|Any CPU.ActiveCfg = Debug
 		{F33BA1CA-4D16-4B97-A17E-5B5AA562A947}.Release|Any CPU.ActiveCfg = Debug
-		{1B927CFA-10B0-4057-971B-C7CDD4982052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1B927CFA-10B0-4057-971B-C7CDD4982052}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1B927CFA-10B0-4057-971B-C7CDD4982052}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1B927CFA-10B0-4057-971B-C7CDD4982052}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
