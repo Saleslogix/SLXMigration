@@ -1,0 +1,332 @@
+#macro( outputSettingRow $label $value )
+  <tr>
+    <td nowrap="nowrap"><b>$label:</b>&nbsp;$value</td>
+  </tr>
+#end
+
+<html xmlns:msxsl="urn:schemas-microsoft-com:xslt">
+  <head>
+    <title></title>
+    <style type="text/css">
+        BODY
+        {
+            BACKGROUND-COLOR: white;
+            FONT-FAMILY: "Verdana", sans-serif;
+            FONT-SIZE: 100%;
+            MARGIN-LEFT: 0px;
+            MARGIN-TOP: 0px
+        }
+        P
+        {
+            FONT-FAMILY: "Verdana", sans-serif;
+            FONT-SIZE: 70%;
+            LINE-HEIGHT: 12pt;
+            MARGIN-BOTTOM: 0px;
+            MARGIN-LEFT: 10px;
+            MARGIN-TOP: 10px
+        }
+        .note
+        {
+            BACKGROUND-COLOR:  #ffffff;
+            COLOR: #336699;
+            FONT-FAMILY: "Verdana", sans-serif;
+            FONT-SIZE: 100%;
+            MARGIN-BOTTOM: 0px;
+            MARGIN-LEFT: 0px;
+            MARGIN-TOP: 0px;
+            PADDING-RIGHT: 10px
+        }
+        .infotable
+        {
+            BACKGROUND-COLOR: #f0f0e0;
+            BORDER-BOTTOM: #ffffff 0px solid;
+            BORDER-COLLAPSE: collapse;
+            BORDER-LEFT: #ffffff 0px solid;
+            BORDER-RIGHT: #ffffff 0px solid;
+            BORDER-TOP: #ffffff 0px solid;
+            FONT-SIZE: 70%;
+            MARGIN-LEFT: 10px
+        }
+        .issuetable
+        {
+            BACKGROUND-COLOR: #ffffe8;
+            BORDER-COLLAPSE: collapse;
+            COLOR: #000000;
+            FONT-SIZE: 100%;
+            MARGIN-BOTTOM: 2px;
+            MARGIN-LEFT: 16px;
+            MARGIN-TOP: 0px
+        }
+        .issuetitle
+        {
+            BACKGROUND-COLOR: #ffffff;
+            BORDER-BOTTOM: #dcdcdc 1px solid;
+            BORDER-TOP: #dcdcdc 1px;
+            COLOR: #003366;
+            FONT-WEIGHT: normal
+        }
+        .header
+        {
+            BACKGROUND-COLOR: #cecf9c;
+            BORDER-BOTTOM: #ffffff 1px solid;
+            BORDER-LEFT: #ffffff 1px solid;
+            BORDER-RIGHT: #ffffff 1px solid;
+            BORDER-TOP: #ffffff 1px solid;
+            COLOR: #000000;
+            FONT-WEIGHT: bold
+        }
+        .issuehdr
+        {
+            BACKGROUND-COLOR: #E0EBF5;
+            BORDER-BOTTOM: #dcdcdc 1px solid;
+            BORDER-TOP: #dcdcdc 1px solid;
+            COLOR: #000000;
+            FONT-WEIGHT: normal
+        }
+        .issuenone
+        {
+            BACKGROUND-COLOR: #ffffff;
+            BORDER-BOTTOM: 0px;
+            BORDER-LEFT: 0px;
+            BORDER-RIGHT: 0px;
+            BORDER-TOP: 0px;
+            COLOR: #000000;
+            FONT-WEIGHT: normal
+        }
+        .content
+        {
+            BACKGROUND-COLOR: #e7e7ce;
+            BORDER-BOTTOM: #ffffff 1px solid;
+            BORDER-LEFT: #ffffff 1px solid;
+            BORDER-RIGHT: #ffffff 1px solid;
+            BORDER-TOP: #ffffff 1px solid;
+            PADDING-LEFT: 3px
+        }
+        .issuecontent
+        {
+            BACKGROUND-COLOR: #ffffff;
+            BORDER-BOTTOM: #dcdcdc 1px solid;
+            BORDER-TOP: #dcdcdc 1px solid;
+            PADDING-LEFT: 3px
+        }
+        A:link
+        {
+            COLOR: #000000;
+            TEXT-DECORATION: none
+        }
+        A:visited
+        {
+            COLOR: #cc6633;
+        }
+        A:active
+        {
+            COLOR: #cc6633;
+        }
+        A:hover
+        {
+            COLOR: #cc3300;
+            TEXT-DECORATION: underline
+        }
+        H1
+        {
+            BACKGROUND-COLOR: #003366;
+            BORDER-BOTTOM: #336699 6px solid;
+            COLOR: #ffffff;
+            FONT-SIZE: 130%;
+            FONT-WEIGHT: normal;
+            MARGIN: 0em 0em 0em -20px;
+            PADDING-BOTTOM: 8px;
+            PADDING-LEFT: 30px;
+            PADDING-TOP: 16px
+        }
+        H2
+        {
+            COLOR: #000000;
+            FONT-SIZE: 80%;
+            FONT-WEIGHT: bold;
+            MARGIN-BOTTOM: 3px;
+            MARGIN-LEFT: 10px;
+            MARGIN-TOP: 20px;
+            PADDING-LEFT: 0px
+        }
+        H3
+        {
+            COLOR: #000000;
+            FONT-SIZE: 80%;
+            FONT-WEIGHT: bold;
+            MARGIN-BOTTOM: -5px;
+            MARGIN-LEFT: 10px;
+            MARGIN-TOP: 20px
+        }
+        H4
+        {
+            COLOR: #000000;
+            FONT-SIZE: 70%;
+            FONT-WEIGHT: bold;
+            MARGIN-BOTTOM: 0px;
+            MARGIN-TOP: 15px;
+            PADDING-BOTTOM: 0px
+        }
+        UL
+        {
+            COLOR: #000000;
+            FONT-SIZE: 70%;
+            LIST-STYLE: square;
+            MARGIN-BOTTOM: 0pt;
+            MARGIN-TOP: 0pt
+        }
+        OL
+        {
+            COLOR: #000000;
+            FONT-SIZE: 70%;
+            LIST-STYLE: square;
+            MARGIN-BOTTOM: 0pt;
+            MARGIN-TOP: 0pt
+        }
+        LI
+        {
+            LIST-STYLE: square;
+            MARGIN-LEFT: 0px
+        }
+        .expandable
+        {
+            CURSOR: hand
+        }
+        .expanded
+        {
+            color: black
+        }
+        .collapsed
+        {
+            DISPLAY: none
+        }
+        .foot
+        {
+            BACKGROUND-COLOR: #ffffff;
+            BORDER-BOTTOM: #cecf9c 1px solid;
+            BORDER-TOP: #cecf9c 2px solid
+        }
+        .settings
+        {
+            MARGIN-LEFT: 25PX;
+        }
+        .help
+        {
+            TEXT-ALIGN: right;
+            margin-right: 10px;
+        }
+    </style>
+  </head>
+  <body topmargin="0" leftmargin="0" rightmargin="0">
+    <h1>Migration Report - $report.Settings.LegacyProject</h1>
+    <p />
+    <span class="note"><b>Time of Conversion:</b>&nbsp;$report.Date</span>
+    <p />
+#foreach( $type in $types )
+  #set( $isGeneral = (!$type.Name || $type.Name == "") )
+    <h2>
+  #if( $isGeneral )
+    General
+  #else
+    Type: $type.Name
+  #end
+    </h2>
+    <table cellpadding="2" cellspacing="0" width="98%" border="1" bordercolor="white" class="infotable">
+      <tr>
+        <td nowrap="nowrap" class="header">
+  #if( $isGeneral )
+          &nbsp;
+  #else
+          Item
+  #end
+        </td>
+        <td nowrap="nowrap" class="header">Errors</td>
+        <td nowrap="nowrap" class="header">Warnings</td>
+      </tr>
+  #foreach( $item in $type.Items )
+    #set( $hasGeneratedItem = ($item.GeneratedItem && $item.GeneratedItem != "") )
+      <tr>
+        <td class="content">
+    #if( $hasGeneratedItem )
+          <a href="javascript:" onclick="window.external.EditItem('$item.GeneratedItem')">$item.Name</a>
+    #else
+          $item.Name
+    #end
+        </td>
+        <td class="content">$item.Errors</td>
+        <td class="content">$item.Warnings</td>
+      </tr>
+      <tr class="expanded" bgcolor="#ffffff" id="srcID0ET">
+        <td colspan="3">
+          <table width="97%" border="1" bordercolor="#dcdcdc" rules="cols" class="issuetable">
+    #foreach( $message in $item.Messages )
+            <tr>
+              <td class="issuenone" style="border-bottom:solid 1 lightgray">
+      #if( $isGeneral && $hasGeneratedItem )
+                <a href="javascript:" onclick="window.external.EditItem('$item.GeneratedItem')">$message</a>
+      #else
+                $message
+      #end
+              </td>
+            </tr>
+    #end
+          </table>
+        </td>
+      </tr>
+  #end
+      <tr valign="top">
+        <td class="foot">$type.Items.Count item#if( $type.Items.Count > 0 )s#end</td>
+        <td class="foot">$type.Errors</td>
+        <td class="foot">$type.Warnings</td>
+      </tr>
+    </table>
+    <p />
+#end
+    <table class="note">
+      <tr>
+        <td nowrap="nowrap">
+          <b>Migration Settings</b>
+        </td>
+      </tr>
+#set( $value = "" )
+#set( $value = $report.Settings.LegacyProject )
+#outputSettingRow( "Legacy Project" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.PackageName )
+#outputSettingRow( "Package Name" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.PortalName )
+#outputSettingRow( "Portal Name" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.ManifestName )
+#outputSettingRow( "Manifest Name" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.MainTable )
+#outputSettingRow( "Main Table" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.Namespace )
+#outputSettingRow( "Namespace" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.VSProjectName )
+#outputSettingRow( "VS Project Name" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.OutputDirectory )
+#outputSettingRow( "Output Directory" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.Language )
+#outputSettingRow( "Language" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.CustomCodeProvider )
+#outputSettingRow( "Custom Code Provider" $value )
+#set( $value = "" )
+#set( $value = $report.Settings.KeyPairFileName )
+#outputSettingRow( "Key Pair File Name" $value )
+#if( $report.Settings.SetRowAndColumnSizes )
+    #set( $value = "True" )
+#else
+    #set( $value = "False" )
+#end
+#outputSettingRow( "Set Row And Column Sizes" $value )
+    </table>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Sage.SalesLogix.Migration" namespace="Sage.SalesLogix.Migration.Orm">
+  <class name="OrmLookup" table="LOOKUP" dynamic-insert="true" dynamic-update="true" lazy="true">
+
+    <!-- Primary Key -->	
+    <id name="LookupId" column="LOOKUPID" type="AnsiString" access="field.camelcase-underscore">
+      <generator class="Sage.SalesLogix.Orm.IdGenerator.Base36Generator, Sage.SalesLogix">
+        <param name="batch_size">10</param>
+      </generator>
+    </id>
+
+    <!-- Properties -->
+    <property name="LookupName" column="LOOKUPNAME" type="AnsiString" access="field.camelcase-underscore" length="64" />
+    <property name="MainTable" column="MAINTABLE" type="AnsiString" access="field.camelcase-underscore" length="32" />
+    <property name="SearchField" column="SEARCHFIELD" type="AnsiString" access="field.camelcase-underscore" length="255" />
+    <property name="IdField" column="IDFIELD" type="AnsiString" access="field.camelcase-underscore" length="255" />
+    <property name="NameField" column="NAMEFIELD" type="AnsiString" access="field.camelcase-underscore" length="255" />
+    <property name="Layout" column="LAYOUT" type="AnsiString" access="field.camelcase-underscore" />
+
+  </class>
+</hibernate-mapping>

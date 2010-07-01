@@ -1,0 +1,875 @@
+##TEMPLATE-NAME 'Parser'
+##LANGUAGE 'C#'
+##ENGINE-NAME 'GOLD Parser Engine'
+##AUTHOR 'Nathan Baulch' 
+##FILE-EXTENSION 'cs'
+using System;
+using System.CodeDom;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Reflection;
+using GoldParser;
+using Microsoft.VisualBasic.CompilerServices;
+using Sage.SalesLogix.Migration.Script.CodeDom;
+
+namespace Sage.SalesLogix.Migration.Script.VBSParser
+{
+    public sealed class Parser
+    {
+        private static readonly CodeTypeReference _objectTypeReference;
+        private static readonly object _newLinePlaceholder;
+
+        private readonly Grammar _grammar;
+        private GoldParser.Parser _parser;
+
+        private readonly SortedList<int, CodeCommentStatement> _comments;
+        private CodeAttributeDeclaration _defaultAttribute;
+        private int? _elseLine;
+
+        static Parser()
+        {
+            _objectTypeReference = new CodeTypeReference(typeof (object));
+            _newLinePlaceholder = new object();
+        }
+
+        public Parser()
+        {
+            _comments = new SortedList<int, CodeCommentStatement>();
+
+            using (Stream stream = GetType().Assembly.GetManifestResourceStream(GetType(), "VBScript.cgt"))
+            {
+                _grammar = new Grammar(new BinaryReader(stream));
+            }
+        }
+
+        public CodeTypeDeclaration Parse(string code)
+        {
+            using (TextReader reader = new StringReader(code))
+            {
+                return Parse(reader);
+            }
+        }
+
+        public CodeTypeDeclaration Parse(TextReader reader)
+        {
+            try
+            {
+                _parser = new GoldParser.Parser(reader, _grammar);
+                _parser.TrimReductions = true;
+
+                Debug.Assert(_comments.Count == 0);
+                Debug.Assert(_defaultAttribute == null);
+                Debug.Assert(_elseLine == null);
+
+                while (true)
+                {
+                    ParseMessage message = _parser.Parse();
+
+                    switch (message)
+                    {
+                        case ParseMessage.Accept:
+                            return ParseAccept();
+                        case ParseMessage.Reduction:
+                            {
+                                object value = ParseReduction();
+                                int? line = null;
+
+                                if (value is CodeTypeMember || value is CodeStatement)
+                                {
+                                    CodeObject obj = (CodeObject) value;
+                                    line = GetLine(obj);
+
+                                    if (line == null)
+                                    {
+                                        for (int i = 0; i < _parser.ReductionCount; i++)
+                                        {
+                                            if (GetTokenValue(i) == _newLinePlaceholder)
+                                            {
+                                                line = GetTokenLine(i);
+                                                SetLine(obj, line);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < _parser.ReductionCount && line == null; i++)
+                                    {
+                                        line = GetTokenLine(i);
+                                    }
+                                }
+
+                                _parser.TokenSyntaxNode = new Token(value, line);
+                            }
+                            break;
+                        case ParseMessage.TokenRead:
+                            _parser.TokenSyntaxNode = new Token(_parser.TokenText, _parser.LineNumber);
+                            break;
+                        case ParseMessage.CommentLineRead:
+                            {
+                                int line = _parser.LineNumber;
+                                CodeCommentStatement commentStatement = new CodeCommentStatement(_parser.CommentText.Substring(1));
+                                _comments.Add(line, commentStatement);
+                            }
+                            break;
+                        case ParseMessage.SyntaxError:
+                        case ParseMessage.LexicalError:
+                        case ParseMessage.InternalError:
+                        case ParseMessage.NotLoadedError:
+                        case ParseMessage.CommentError:
+                            throw new ParserException(string.Format("{0} on line {1}", message, _parser.LineNumber));
+                        case ParseMessage.CommentBlockRead:
+                        case ParseMessage.Empty:
+                        default:
+                            throw new ParserException(string.Format("Unexpected message '{0}' on line {1}", message, _parser.LineNumber));
+                    }
+                }
+            }
+            finally
+            {
+                _lines = null;
+                _elseLines = null;
+                _lastLines = null;
+            }
+        }
+
+        private CodeTypeDeclaration ParseAccept()
+        {
+            CodeTypeDeclaration typeDecl = new CodeTypeDeclaration();
+            typeDecl.Attributes = 0;
+            object value = ((Token) _parser.TokenSyntaxNode).Value;
+
+            if (value != null)
+            {
+                CodeConstructor constructor = new CodeConstructor();
+
+                if (value is CodeObject)
+                {
+                    value = new CodeObject[] {(CodeObject) value};
+                }
+
+                foreach (CodeObject obj in (IEnumerable) value)
+                {
+                    if (obj is CodeVariableDeclarationStatement)
+                    {
+                        CodeVariableDeclarationStatement variableDeclStmt = (CodeVariableDeclarationStatement) obj;
+                        CodeMemberField memberField = new CodeMemberField(
+                            variableDeclStmt.Type,
+                            variableDeclStmt.Name);
+                        memberField.InitExpression = variableDeclStmt.InitExpression;
+                        memberField.Attributes = 0;
+                        SetLine(memberField, GetLine(variableDeclStmt));
+                        IncorporateComments(memberField);
+                        typeDecl.Members.Add(memberField);
+                    }
+                    else if (obj is CodeStatement)
+                    {
+                        CodeStatement statement = (CodeStatement) obj;
+                        int? firstLine = GetLine(statement);
+                        int extraCount = _comments.Count;
+
+                        for (int j = 0; j < extraCount && _comments.Keys[0] < firstLine; j++)
+                        {
+                            constructor.Statements.Add(_comments.Values[0]);
+                            _comments.RemoveAt(0);
+                        }
+
+                        IncorporateComments(statement);
+                        constructor.Statements.Add(statement);
+                    }
+                    else
+                    {
+                        CodeTypeMember typeMember = (CodeTypeMember) obj;
+                        IncorporateComments(typeMember);
+                        typeDecl.Members.Add(typeMember);
+                    }
+                }
+
+                if (constructor.Statements.Count > 0)
+                {
+                    CodeDomUtils.SetMemberAttributes(constructor, MemberAttributes.Public);
+                    typeDecl.Members.Insert(0, constructor);
+                }
+            }
+
+            if (_comments.Count > 0)
+            {
+                CodeSnippetTypeMember snippetMember = new CodeSnippetTypeMember(string.Empty);
+
+                foreach (CodeCommentStatement commentStatement in _comments.Values)
+                {
+                    snippetMember.Comments.Add(commentStatement);
+                }
+
+                _comments.Clear();
+                typeDecl.Members.Add(snippetMember);
+            }
+
+            Debug.Assert(_comments.Count == 0);
+            Debug.Assert(_defaultAttribute == null);
+            Debug.Assert(_elseLine == null);
+            return typeDecl;
+        }
+
+        private object ParseReduction()
+        {
+            RuleConstants rule = (RuleConstants) _parser.ReductionRule.Index;
+
+            switch (rule)
+            {
+##RULES
+                case RuleConstants.%ID% :
+                    return Parse%ID%();
+##END-RULES
+                default:
+                    Debug.Assert(false, "Unexpected rule: " + rule);
+                    return null;
+            }
+        }
+
+        //=======================================
+
+##RULES
+        private object Parse%ID%()
+        {
+            // %Description%
+			AssertReductionCount(%SymbolCount%);
+            throw new Exception("%ID%");
+        }
+
+##END-RULES
+		//=======================================
+
+        private object ParseID()
+        {
+            AssertReductionCount(1);
+            return new CodeVariableReferenceExpression(GetTokenText(0));
+        }
+
+        private string ParseExtendedID(int index)
+        {
+            return ((CodeVariableReferenceExpression) GetTokenValue(index)).VariableName;
+        }
+
+        //=======================================
+
+        private int? GetTokenLine(int index)
+        {
+            return ((Token) _parser.GetReductionSyntaxNode(index)).Line;
+        }
+
+        private object GetTokenValue(int index)
+        {
+            return ((Token) _parser.GetReductionSyntaxNode(index)).Value;
+        }
+
+        private string GetTokenText(int index)
+        {
+            return (string) GetTokenValue(index);
+        }
+
+        //=======================================
+
+        private void AssertReductionCount(int count)
+        {
+            Debug.Assert(_parser.ReductionCount == count);
+        }
+
+        private void AssertNewLine(int index)
+        {
+            object value = GetTokenValue(index);
+            Debug.Assert(value == null || value == _newLinePlaceholder);
+        }
+
+        private void AssertString(int index, params string[] values)
+        {
+            string text = (string) GetTokenValue(index);
+
+            foreach (string value in values)
+            {
+                if (StringUtils.CaseInsensitiveEquals(text, value))
+                {
+                    return;
+                }
+            }
+
+            Debug.Assert(false);
+        }
+
+        private static void AssertIs<T>(object item)
+        {
+            Debug.Assert(item is T);
+        }
+
+        private static void AssertIs<T1, T2>(object item)
+        {
+            Debug.Assert(item is T1 || item is T2);
+        }
+
+        private static void AssertNullOrIs<T>(object item)
+        {
+            Debug.Assert(item == null || item is T);
+        }
+
+        private static void AssertNullOrIs<T1, T2>(object item)
+        {
+            Debug.Assert(item == null || item is T1 || item is T2);
+        }
+
+        //=======================================
+
+        private CodeMemberMethod BuildMemberMethod(object attributes, object name, object parameters, object statements, int? lastLine)
+        {
+            CodeMemberMethod memberMethod = new CodeMemberMethod();
+            SetLastLine(memberMethod, lastLine - 1);
+
+            if (_defaultAttribute != null)
+            {
+                //TODO: warning - default is not applicable to methods
+                _defaultAttribute = null;
+            }
+
+            if (attributes == null)
+            {
+                memberMethod.Attributes = 0;
+            }
+            else
+            {
+                CodeDomUtils.SetMemberAttributes(memberMethod, (MemberAttributes) attributes);
+            }
+
+            memberMethod.Name = ((CodeVariableReferenceExpression) name).VariableName;
+            AppendParameterDeclarationExpressions(memberMethod.Parameters, parameters);
+            AppendStatements(memberMethod.Statements, statements);
+            return memberMethod;
+        }
+
+        private CodeMemberMethod BuildMemberMethodFunction(object attributes, object name, object parameters, object statements, int? lastLine)
+        {
+            CodeMemberMethod memberMethod = BuildMemberMethod(
+                attributes,
+                name,
+                parameters,
+                statements,
+                lastLine);
+            memberMethod.ReturnType = _objectTypeReference;
+            return memberMethod;
+        }
+
+        private static object BuildMemberFields(object thisField, object otherFields, MemberAttributes attributes)
+        {
+            CodeMemberField memberField;
+
+            if (thisField is CodeVariableReferenceExpression)
+            {
+                memberField = new CodeMemberField(_objectTypeReference, ((CodeVariableReferenceExpression) thisField).VariableName);
+            }
+            else
+            {
+                memberField = (CodeMemberField) thisField;
+            }
+
+            CodeDomUtils.SetMemberAttributes(memberField, attributes);
+
+            if (otherFields == null)
+            {
+                return memberField;
+            }
+            else
+            {
+                List<CodeObject> members = new List<CodeObject>();
+                members.Add(memberField);
+
+                if (otherFields is CodeVariableDeclarationStatement)
+                {
+                    CodeVariableDeclarationStatement variableStmt = (CodeVariableDeclarationStatement) otherFields;
+                    memberField = new CodeMemberField(variableStmt.Type, variableStmt.Name);
+                    CodeDomUtils.SetMemberAttributes(memberField, attributes);
+                    members.Add(memberField);
+                }
+                else
+                {
+                    foreach (CodeVariableDeclarationStatement variableStmt in (IEnumerable) otherFields)
+                    {
+                        memberField = new CodeMemberField(variableStmt.Type, variableStmt.Name);
+                        CodeDomUtils.SetMemberAttributes(memberField, attributes);
+                        members.Add(memberField);
+                    }
+                }
+
+                return members;
+            }
+        }
+
+        //=======================================
+
+        private void IncorporateComments(CodeTypeMember typeMember)
+        {
+            int? line = GetLine(typeMember);
+            int extraCount = _comments.Count;
+
+            for (int i = 0; i < extraCount && _comments.Keys[0] < line; i++)
+            {
+                CodeStatement statement = _comments.Values[0];
+
+                if (statement is CodeCommentStatement)
+                {
+                    typeMember.Comments.Add((CodeCommentStatement) statement);
+                }
+
+                _comments.RemoveAt(0);
+            }
+
+            if (typeMember is CodeTypeDeclaration)
+            {
+                CodeTypeDeclaration typeDecl = (CodeTypeDeclaration) typeMember;
+
+                foreach (CodeTypeMember subTypeMember in typeDecl.Members)
+                {
+                    IncorporateComments(subTypeMember);
+                }
+
+                CodeSnippetTypeMember snippetTypeMember = new CodeSnippetTypeMember(string.Empty);
+                extraCount = _comments.Count;
+                int? lastLine = GetLastLine(typeDecl);
+
+                for (int i = 0; i < extraCount && _comments.Keys[0] < lastLine; i++)
+                {
+                    snippetTypeMember.Comments.Add(_comments.Values[0]);
+                    _comments.RemoveAt(0);
+                }
+
+                if (snippetTypeMember.Comments.Count > 0)
+                {
+                    typeDecl.Members.Add(snippetTypeMember);
+                }
+            }
+            else if (typeMember is CodeMemberMethod)
+            {
+                CodeMemberMethod memberMethod = (CodeMemberMethod) typeMember;
+                IncorporateComments(memberMethod.Statements, GetLastLine(typeMember));
+            }
+            else if (typeMember is CodeMemberProperty)
+            {
+                CodeMemberProperty memberProperty = (CodeMemberProperty) typeMember;
+                int? lastLine = GetLastLine(typeMember);
+                IncorporateComments(memberProperty.GetStatements, lastLine);
+                IncorporateComments(memberProperty.SetStatements, lastLine);
+            }
+            else if (typeMember == null)
+            {
+                Debug.Assert(false, "Unexpected null type member");
+            }
+            else
+            {
+                Debug.Assert(typeMember is CodeMemberField, "Unexpected type member type: " + typeMember.GetType().Name);
+            }
+        }
+
+        private void IncorporateComments(CodeStatementCollection statements, int? lastLine)
+        {
+            for (int i = 0; i < statements.Count; i++)
+            {
+                CodeStatement statement = statements[i];
+                int? firstLine = GetLine(statement);
+                int extraCount = _comments.Count;
+
+                for (int j = 0; j < extraCount && _comments.Keys[0] < firstLine; j++)
+                {
+                    statements.Insert(i + j, _comments.Values[0]);
+                    _comments.RemoveAt(0);
+                }
+
+                IncorporateComments(statement);
+            }
+
+            {
+                int extraCount = _comments.Count;
+
+                for (int i = 0; i < extraCount && _comments.Keys[0] <= lastLine; i++)
+                {
+                    statements.Add(_comments.Values[0]);
+                    _comments.RemoveAt(0);
+                }
+            }
+        }
+
+        private void IncorporateComments(CodeStatement statement)
+        {
+            if (statement is CodeSwitchStatement)
+            {
+                CodeSwitchStatement switchStmt = (CodeSwitchStatement) statement;
+
+                foreach (CodeSwitchOption option in switchStmt.Options)
+                {
+                    IncorporateComments(option.Statements, GetLastLine(option));
+                }
+
+                IncorporateComments(switchStmt.DefaultStatements, GetLastLine(switchStmt));
+            }
+            else if (statement is CodeConditionStatement)
+            {
+                CodeConditionStatement conditionStmt = (CodeConditionStatement) statement;
+
+                if (conditionStmt.FalseStatements.Count > 0)
+                {
+                    IncorporateComments(conditionStmt.TrueStatements, GetElseLine(conditionStmt));
+                    IncorporateComments(conditionStmt.FalseStatements, GetLastLine(conditionStmt));
+                }
+                else
+                {
+                    IncorporateComments(conditionStmt.TrueStatements, GetLastLine(conditionStmt));
+                }
+            }
+            else if (statement is CodeIterationStatement)
+            {
+                CodeIterationStatement iterationStmt = (CodeIterationStatement) statement;
+                IncorporateComments(iterationStmt.Statements, GetLastLine(iterationStmt));
+            }
+            else if (statement == null)
+            {
+                Debug.Assert(false, "Unexpected null statement");
+            }
+            else
+            {
+                Debug.Assert(statement is CodeAssignStatement
+                             || statement is CodeCommentStatement
+                             || statement is CodeExpressionStatement
+                             || statement is CodeMethodReturnStatement
+                             || statement is CodeSnippetStatement
+                             || statement is CodeVariableDeclarationStatement,
+                             "Unexpected statement type: " + statement.GetType().Name);
+            }
+        }
+
+        //=======================================
+
+        private void AppendStatements(CodeStatementCollection collection, int index)
+        {
+            AppendStatements(collection, GetTokenValue(index));
+        }
+
+        private void AppendExpressions(CodeExpressionCollection collection, int index)
+        {
+            AppendExpressions(collection, GetTokenValue(index));
+        }
+
+        private void AppendParameterDeclarationExpressions(CodeParameterDeclarationExpressionCollection collection, int index)
+        {
+            AppendParameterDeclarationExpressions(collection, GetTokenValue(index));
+        }
+
+        private void AppendSwitchOptions(CodeSwitchOptionCollection collection, int index)
+        {
+            AppendSwitchOptions(collection, GetTokenValue(index));
+        }
+
+        private static void AppendStatements(CodeStatementCollection collection, object obj)
+        {
+            if (obj != null)
+            {
+                if (obj is CodeStatement)
+                {
+                    collection.Add((CodeStatement) obj);
+                }
+                else
+                {
+                    collection.AddRange((CodeStatementCollection) obj);
+                }
+            }
+        }
+
+        private static void AppendExpressions(CodeExpressionCollection collection, object obj)
+        {
+            if (obj != null)
+            {
+                if (obj is CodeExpression)
+                {
+                    collection.Add((CodeExpression) obj);
+                }
+                else
+                {
+                    collection.AddRange((CodeExpressionCollection) obj);
+                }
+            }
+        }
+
+        private static void AppendParameterDeclarationExpressions(CodeParameterDeclarationExpressionCollection collection, object obj)
+        {
+            if (obj != null)
+            {
+                if (obj is CodeParameterDeclarationExpression)
+                {
+                    collection.Add((CodeParameterDeclarationExpression) obj);
+                }
+                else
+                {
+                    collection.AddRange((CodeParameterDeclarationExpressionCollection) obj);
+                }
+            }
+        }
+
+        private static void AppendSwitchOptions(CodeSwitchOptionCollection collection, object obj)
+        {
+            if (obj != null)
+            {
+                if (obj is CodeSwitchOption)
+                {
+                    collection.Add((CodeSwitchOption) obj);
+                }
+                else
+                {
+                    collection.AddRange((CodeSwitchOptionCollection) obj);
+                }
+            }
+        }
+
+        //=======================================
+
+        private object MergeObjects(int leftIndex, int rightIndex)
+        {
+            return Merge<List<CodeObject>, CodeObject>(leftIndex, rightIndex);
+        }
+
+        private object MergeStatements(int leftIndex, int rightIndex)
+        {
+            return Merge<CodeStatementCollection, CodeStatement>(leftIndex, rightIndex);
+        }
+
+        private object MergeExpressions(int leftIndex, int rightIndex)
+        {
+            return Merge<CodeExpressionCollection, CodeExpression>(leftIndex, rightIndex);
+        }
+
+        private object MergeParameterDeclarationExpressions(int leftIndex, int rightIndex)
+        {
+            return Merge<CodeParameterDeclarationExpressionCollection, CodeParameterDeclarationExpression>(leftIndex, rightIndex);
+        }
+
+        private object Merge<TCollection, TItem>(int leftIndex, int rightIndex)
+            where TCollection : IList, new()
+        {
+            object leftObj = GetTokenValue(leftIndex);
+            object rightObj = GetTokenValue(rightIndex);
+
+            if (leftObj == null && rightObj == null)
+            {
+                return null;
+            }
+            else if (leftObj is TItem && rightObj == null)
+            {
+                return leftObj;
+            }
+            else if (leftObj == null && rightObj is TItem)
+            {
+                return rightObj;
+            }
+            else
+            {
+                TCollection items = new TCollection();
+
+                if (leftObj is TItem)
+                {
+                    items.Add(leftObj);
+                }
+                else if (leftObj is CodeMemberField) //TODO: may require cleanup
+                {
+                    CodeMemberField memberField = (CodeMemberField) leftObj;
+                    items.Add(new CodeVariableDeclarationStatement(_objectTypeReference, memberField.Name, memberField.InitExpression));
+                }
+                else if (leftObj != null)
+                {
+                    //workaround given Const can exist in methods
+
+                    foreach (object item in (IEnumerable) leftObj)
+                    {
+                        if (item is CodeMemberField)
+                        {
+                            CodeMemberField memberField = (CodeMemberField) item;
+                            items.Add(new CodeVariableDeclarationStatement(
+                                          memberField.Type,
+                                          memberField.Name,
+                                          memberField.InitExpression));
+                        }
+                        else
+                        {
+                            items.Add(item);
+                        }
+                    }
+                }
+
+                if (rightObj is TItem)
+                {
+                    items.Add(rightObj);
+                }
+                else if (rightObj != null)
+                {
+                    foreach (object item in (IEnumerable) rightObj)
+                    {
+                        items.Add(item);
+                    }
+                }
+
+                return items;
+            }
+        }
+
+        //=======================================
+
+        private static CodeExpression InvertExpression(CodeExpression expression)
+        {
+            return new CodeBinaryOperatorExpression(
+                expression,
+                CodeBinaryOperatorType.IdentityInequality,
+                new CodePrimitiveExpression(true));
+        }
+
+        private static void SetRootTarget(CodeExpression expression, CodeExpression newTargetExpr)
+        {
+            CodeExpression childExpr = null;
+            CodeExpression parentExpr = expression;
+
+            while (parentExpr != null)
+            {
+                if (parentExpr is CodePropertyReferenceExpression)
+                {
+                    parentExpr = ((CodePropertyReferenceExpression) expression).TargetObject;
+                }
+                else if (parentExpr is CodeMethodInvokeExpression)
+                {
+                    parentExpr = ((CodeMethodInvokeExpression) expression).Method.TargetObject;
+                }
+                else
+                {
+                    if (childExpr is CodePropertyReferenceExpression)
+                    {
+                        ((CodePropertyReferenceExpression) childExpr).TargetObject = new CodePropertyReferenceExpression(
+                            newTargetExpr,
+                            ((CodeVariableReferenceExpression) expression).VariableName);
+                    }
+                    else
+                    {
+                        ((CodeMethodInvokeExpression) childExpr).Method.TargetObject = new CodePropertyReferenceExpression(
+                            newTargetExpr,
+                            ((CodeVariableReferenceExpression) expression).VariableName);
+                    }
+
+                    break;
+                }
+
+                if (parentExpr == null)
+                {
+                    if (expression is CodePropertyReferenceExpression)
+                    {
+                        ((CodePropertyReferenceExpression) expression).TargetObject = newTargetExpr;
+                    }
+                    else
+                    {
+                        ((CodeMethodInvokeExpression) expression).Method.TargetObject = newTargetExpr;
+                    }
+
+                    break;
+                }
+                else
+                {
+                    childExpr = expression;
+                    expression = parentExpr;
+                }
+            }
+        }
+
+        //=======================================
+
+        private static CodeExpression IncrementArraySize(CodeExpression before)
+        {
+            CodePrimitiveExpression primitiveExpr = before as CodePrimitiveExpression;
+
+            if (primitiveExpr != null && primitiveExpr.Value is int)
+            {
+                primitiveExpr.Value = ((int) primitiveExpr.Value) + 1;
+                return before;
+            }
+            else
+            {
+                return new CodeBinaryOperatorExpression(
+                    before,
+                    CodeBinaryOperatorType.Add,
+                    new CodePrimitiveExpression(1));
+            }
+        }
+
+        private static void IncrementArraySizes(CodeExpressionCollection expressions)
+        {
+            for (int i = 0; i < expressions.Count; i++)
+            {
+                expressions[i] = IncrementArraySize(expressions[i]);
+            }
+        }
+
+        //=======================================
+
+        private IDictionary<CodeObject, int?> _lines;
+        private IDictionary<CodeObject, int?> _elseLines;
+        private IDictionary<CodeObject, int?> _lastLines;
+
+        private int? GetLine(CodeObject obj)
+        {
+            return GetValue(_lines, obj);
+        }
+
+        private void SetLine(CodeObject obj, int? line)
+        {
+            SetValue(ref _lines, obj, line);
+        }
+
+        private int? GetElseLine(CodeObject obj)
+        {
+            return GetValue(_elseLines, obj);
+        }
+
+        private void SetElseLine(CodeObject obj, int? elseLine)
+        {
+            SetValue(ref _elseLines, obj, elseLine);
+        }
+
+        private int? GetLastLine(CodeObject obj)
+        {
+            return GetValue(_lastLines, obj);
+        }
+
+        private void SetLastLine(CodeObject obj, int? lastLine)
+        {
+            SetValue(ref _lastLines, obj, lastLine);
+        }
+
+        //---------------------------------------
+
+        private static TValue GetValue<TKey, TValue>(IDictionary<TKey, TValue> dictionary, TKey key)
+        {
+            if (dictionary == null)
+            {
+                return default(TValue);
+            }
+            else
+            {
+                TValue value;
+                dictionary.TryGetValue(key, out value);
+                return value;
+            }
+        }
+
+        private static void SetValue<TKey, TValue>(ref IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary == null)
+            {
+                dictionary = new Dictionary<TKey, TValue>();
+            }
+
+            dictionary[key] = value;
+        }
+    }
+}

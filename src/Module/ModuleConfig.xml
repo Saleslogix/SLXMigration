@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Module ModuleTypeName="Sage.SalesLogix.Migration.Module.MigrationModuleInit, Sage.SalesLogix.Migration.Module"
+        xmlns="urn:schemas-sage-com:Module">
+  <Localization>
+    <ResourceManager Alias="Migration"
+                     ResourceAssembly="Sage.SalesLogix.Migration.Module"
+                     ResourceNamespace="Sage.SalesLogix.Migration.Module.Properties.Resources"/>
+  </Localization>
+  <UIElements>
+    <UIExtensionSite Uri="mnu://MainMenu/View">
+      <ChildElements>
+        <UIElement Uri="mnu://MainMenu/View/ShowMigrationReports"
+                   TypeName="ToolStripMenuItem"
+                   Command="cmd://MigrationModule/ShowMigrationReports">
+          <Properties>
+            <Property Name="Text">{Migration:View_MigrationReports}</Property>
+            <Property Name="Image">{Migration:ReportsIcon}</Property>
+          </Properties>
+        </UIElement>
+      </ChildElements>
+    </UIExtensionSite>
+    <UIExtensionSite Uri="mnu://MainMenu/Tools">
+      <ChildElements>
+        <UIElement Uri="cmd://MainMenu/Tools/ShowMigrationTool"
+                   TypeName="ToolStripMenuItem"
+                   Command="cmd://MigrationModule/ShowMigrationTool">
+          <Properties>
+            <Property Name="Text">{Migration:Tools_Migration}</Property>
+            <Property Name="Image">{Migration:ToolIcon}</Property>
+            <Property Name="ShortcutKeys">Control,Shift,M</Property>
+          </Properties>
+        </UIElement>
+      </ChildElements>
+    </UIExtensionSite>
+    <UIExtensionSite Uri="tb://IDE">
+      <ChildElements>
+        <UIElement Uri="tb://IDE/MigrationModule/ShowMigrationTool"
+                   TypeName="ToolStripButton"
+                   Command="cmd://MigrationModule/ShowMigrationTool">
+          <Properties>
+            <Property Name="Text">{Migration:Tools_Migration}</Property>
+            <Property Name="Image">{Migration:ToolIcon}</Property>
+            <Property Name="ShortcutKeys">Control,Shift,M</Property>
+            <Property Name="DisplayStyle">Image</Property>
+          </Properties>
+        </UIElement>
+      </ChildElements>
+    </UIExtensionSite>
+    <RootUIElement Uri="ctx://MigrationModule/Report"
+                   TargetLocation="OnDemand"
+                   TypeName="ContextMenuStrip">
+      <ChildElements>
+        <UIElement Uri="ctx://MigrationModule/ViewReport"
+                   Command="cmd://MigrationModule/ViewReport"
+                   TypeName="ToolStripMenuItem">
+          <Properties>
+            <Property Name="Text">{Migration:ViewReportMenuItem_Text}</Property>
+          </Properties>
+        </UIElement>
+        <UIElement Uri="ctx://MigrationModule/DeleteReport"
+                   Command="cmd://MigrationModule/DeleteReport"
+                   TypeName="ToolStripMenuItem">
+          <Properties>
+            <Property Name="Text">{Migration:DeleteReportMenuItem_Text}</Property>
+          </Properties>
+        </UIElement>
+      </ChildElements>
+    </RootUIElement>
+  </UIElements>
+  <LoggerConfiguration>
+    <log4net threshold="ALL">
+      <appender name="outputwindow.migration" type="Sage.Platform.IDEModule.OutputWindowAppender, Sage.Platform.IDEModule">
+        <param name="OutputWindowName" value="OutputWindow" />
+        <param name="LogName" value="migration" />
+        <param name="LogCaption" value="Migration Output" />
+        <layout type="log4net.Layout.PatternLayout, log4net">
+          <param name="ConversionPattern" value="%-5p - %m%n" />
+        </layout>
+      </appender>
+      <appender name="migrationreport" type="Sage.SalesLogix.Migration.Module.MigrationReportAppender, Sage.SalesLogix.Migration.Module">
+        <layout type="log4net.Layout.PatternLayout, log4net">
+          <param name="ConversionPattern" value="%m" />
+        </layout>
+      </appender>
+      <logger name="Sage.Migration">
+        <priority value="ALL" />
+        <appender-ref ref="outputwindow.migration" />
+        <appender-ref ref="migrationreport" />
+      </logger>
+    </log4net>
+  </LoggerConfiguration>
+</Module>

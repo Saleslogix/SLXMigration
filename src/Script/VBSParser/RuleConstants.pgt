@@ -1,0 +1,15 @@
+##TEMPLATE-NAME 'RuleConstants'
+##LANGUAGE 'C#'
+##ENGINE-NAME 'GOLD Parser Engine'
+##AUTHOR 'Nathan Baulch' 
+##FILE-EXTENSION 'cs'
+namespace Sage.SalesLogix.Migration.Script.VBSParser
+{
+    public enum RuleConstants
+    {
+##RULES
+##DELIMITER ','
+        %ID.Padded% = %Value.Padded%%Delimiter% // %Description%
+##END-RULES
+    }
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="Sage.SalesLogix.Migration" namespace="Sage.SalesLogix.Migration.Orm">
+  <class name="OrmProject" table="PROJECT" dynamic-insert="true" dynamic-update="true" lazy="true">
+
+    <!-- Primary Key -->	
+    <id name="ProjectId" column="PROJECTID" type="AnsiString" access="field.camelcase-underscore">
+      <generator class="Sage.SalesLogix.Orm.IdGenerator.Base36Generator, Sage.SalesLogix">
+        <param name="batch_size">10</param>
+      </generator>
+    </id>
+
+    <!-- Properties -->
+    <property name="Name" column="NAME" type="AnsiString" access="field.camelcase-underscore" length="255" />
+
+    <!-- Relationships -->
+    <set name="Items" access="field.camelcase-underscore" table="PROJECTITEM" where="ITEMTYPE=6" >
+      <key column="PROJECTID" />
+      <one-to-many class="OrmProjectItem"/>
+    </set>
+
+  </class>
+</hibernate-mapping>

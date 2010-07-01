@@ -1,0 +1,295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B680B1FD-DC13-4518-9F5A-E0BAD54B5439}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sage.SalesLogix.Migration.Module</RootNamespace>
+    <AssemblyName>Sage.SalesLogix.Migration.Module</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\Module\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\Module\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Libraries\NHibernate\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Libraries\NHibernate\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Engine" />
+    <Reference Include="Microsoft.Unity, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Libraries\unity\Microsoft.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=1.2.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Libraries\NHibernate\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform, Version=7.2.0.1238, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.AdminModule, Version=7.2.0.1418, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.AdminModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.Application, Version=7.2.0.1328, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.Application.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.Application.UI.WinForms, Version=7.2.1.1669, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.Application.UI.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.BundleModel, Version=7.2.0.1503, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.BundleModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.Configuration, Version=7.2.1.1542, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.FileSystem, Version=7.2.1.1669, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.IDEModule, Version=7.2.0.1503, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.IDEModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.Orm.CodeGen, Version=7.2.1.1553, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.Orm.CodeGen.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.Projects, Version=7.2.0.1238, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.Projects.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.QuickForms, Version=7.2.0.1477, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.QuickForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.QuickForms.Designer, Version=7.2.2.1829, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.QuickForms.Designer.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.QuickForms.QFControls, Version=7.2.2.1829, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.QuickForms.QFControls.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.VirtualFileSystem, Version=7.2.1.1553, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.VirtualFileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.WebPortal.Design, Version=7.2.1.1553, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.WebPortal.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.Platform.Windows.Forms, Version=7.2.2.1673, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.Platform.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.SalesLogix, Version=7.2.1.1530, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.SalesLogix.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.SalesLogix.BundleModel.BundleActions, Version=7.2.0.1503, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.SalesLogix.BundleModel.BundleActions.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.SalesLogix.Plugins, Version=7.2.1.1530, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.SalesLogix.Plugins.dll</HintPath>
+    </Reference>
+    <Reference Include="Sage.SalesLogix.SchemaSupport, Version=7.2.0.1503, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Debug\Sage.SalesLogix.SchemaSupport.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BackgroundWorkerStatus.cs" />
+    <Compile Include="ExtendedLog.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MigrationCompleteEventArgs.cs" />
+    <Compile Include="MigrationModel.cs" />
+    <Compile Include="MigrationReport.cs" />
+    <Compile Include="MigrationReportEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MigrationReportEditor.Designer.cs">
+      <DependentUpon>MigrationReportEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MigrationReportMessage.cs" />
+    <Compile Include="MigrationReportPersistentAdapter.cs" />
+    <Compile Include="MigrationWorkItem.cs" />
+    <Compile Include="MigrationReportsWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MigrationReportsWindow.Designer.cs">
+      <DependentUpon>MigrationReportsWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\EntityService.cs" />
+    <Compile Include="Services\HierarchyNodeService.cs" />
+    <Compile Include="Services\IEntityService.cs" />
+    <Compile Include="Services\IPortalService.cs" />
+    <Compile Include="Services\MigrationContextHolderService.cs" />
+    <Compile Include="Services\OrmEntityLoaderService.cs" />
+    <Compile Include="Services\PortalService.cs" />
+    <Compile Include="StepHandler.cs" />
+    <Compile Include="VSProject\CSharpProject.cs" />
+    <Compile Include="VSProject\DefaultVSProject.cs" />
+    <Compile Include="VSProject\VBNetProject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="MigrationModule.cs" />
+    <Compile Include="Services\ManifestService.cs" />
+    <Compile Include="Services\VSProjectService.cs" />
+    <Compile Include="Services\IManifestService.cs" />
+    <Compile Include="Services\IVSProjectService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Forms\Sage.SalesLogix.Migration.Forms.csproj">
+      <Project>{1E7A131E-5BCA-480B-8B4F-83208D096732}</Project>
+      <Name>Sage.SalesLogix.Migration.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sage.SalesLogix.Migration.csproj">
+      <Project>{3F841CEB-6326-4199-B6EE-9D2B9D1A092F}</Project>
+      <Name>Sage.SalesLogix.Migration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Script\Sage.SalesLogix.Migration.Script.csproj">
+      <Project>{701070B0-4F26-434F-A64D-41C541EB853D}</Project>
+      <Name>Sage.SalesLogix.Migration.Script</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MigrationReportEditor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MigrationReportEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModuleConfig.xml" />
+    <EmbeddedResource Include="MigrationReportsWindow.resx">
+      <DependentUpon>MigrationReportsWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="Resources\DataSourcesToolWindow_DefaultNode.png" />
+    <None Include="Resources\DataSourcesToolWindow_Image.png" />
+    <None Include="Resources\DataSourcesToolWindow_ObjectNode.png" />
+    <Content Include="Resources\ToolIcon.png" />
+    <None Include="Resources\ReportsIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MigrationReportLayout.vm" />
+    <None Include="Properties\DataSources\MigrationReport.datasource" />
+    <None Include="Properties\DataSources\MigrationSettings.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>rd "$(SolutionDir)..\..\..\Debug\Migration\" /s /q
+md "$(SolutionDir)..\..\..\Debug\Migration\"
+copy "$(TargetDir)Sage.SalesLogix.Migration.*" "$(SolutionDir)..\..\..\Debug\Migration\" /y
+copy "$(SolutionDir)..\lib\*.dll" "$(SolutionDir)..\..\..\Debug\Migration\" /y</PostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>
