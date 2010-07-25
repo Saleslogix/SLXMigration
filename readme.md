@@ -25,22 +25,22 @@ File Information
 ------------------
 The Migration Tool zip file contains the following files:
 
-Migration\Borland.Vcl.dll
-Migration\Interop.AxSLXCharts.dll
-Migration\Interop.AxSLXControls.dll 
-Migration\Interop.AxSLXDialogs.dll 
-Migration\Interop.SalesLogix.dll
-Migration\Interop.SLXCharts.dll 
-Migration\Interop.SLXControls.dll 
-Migration\Interop.SLXDialogs.dll 
-Migration\Interop.SLXOptions.dll 
-Migration\Interop.StdType.dll 
-Migration\Interop.StdVCL.dll 
-Migration\Sage.SalesLogix.Migration.dll 
-Migration\Sage.SalesLogix.Migration.Forms.dll 
-Migration\Sage.SalesLogix.Migration.Module.dll 
-Migration\Sage.SalesLogix.Migration.Script.dll 
-Sample\Widgets.sxb
+Migration\Borland.Vcl.dll  
+Migration\Interop.AxSLXCharts.dll  
+Migration\Interop.AxSLXControls.dll   
+Migration\Interop.AxSLXDialogs.dll   
+Migration\Interop.SalesLogix.dll  
+Migration\Interop.SLXCharts.dll   
+Migration\Interop.SLXControls.dll   
+Migration\Interop.SLXDialogs.dll   
+Migration\Interop.SLXOptions.dll   
+Migration\Interop.StdType.dll   
+Migration\Interop.StdVCL.dll   
+Migration\Sage.SalesLogix.Migration.dll   
+Migration\Sage.SalesLogix.Migration.Forms.dll   
+Migration\Sage.SalesLogix.Migration.Module.dll   
+Migration\Sage.SalesLogix.Migration.Script.dll   
+Sample\Widgets.sxb  
 Sage SalesLogix Migration Tool Guide.pdf
 
 ### To install the Migration Tool
