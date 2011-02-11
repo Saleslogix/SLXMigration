@@ -45,11 +45,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Debug\</OutputPath>
+    <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <SlxPath>C:\Program Files (x86)\SalesLogix\ReferenceAssemblies</SlxPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -59,6 +60,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <SlxPath>C:\Program Files (x86)\SalesLogix\ReferenceAssemblies</SlxPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="BasePluginInfo.cs" />
@@ -126,51 +128,51 @@
   <ItemGroup>
     <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Libraries\NHibernate\Iesi.Collections.dll</HintPath>
+      <HintPath>$(SlxPath)\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Libraries\NHibernate\log4net.dll</HintPath>
+      <HintPath>$(SlxPath)\log4net.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate, Version=1.2.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Libraries\NHibernate\NHibernate.dll</HintPath>
+      <HintPath>$(SlxPath)\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="Sage.Platform, Version=7.2.0.1418, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.Platform.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Sage.Platform.Application, Version=7.2.1.1541, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.Platform.Application.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.Platform.Application.dll</HintPath>
     </Reference>
     <Reference Include="Sage.Platform.BundleModel, Version=7.2.1.1664, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.Platform.BundleModel.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.Platform.BundleModel.dll</HintPath>
     </Reference>
     <Reference Include="Sage.Platform.Configuration, Version=7.2.1.1542, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.Platform.Configuration.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.Platform.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Sage.Platform.Projects, Version=7.2.0.1418, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.Platform.Projects.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.Platform.Projects.dll</HintPath>
     </Reference>
     <Reference Include="Sage.Platform.QuickForms, Version=7.2.0.1418, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.Platform.QuickForms.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.Platform.QuickForms.dll</HintPath>
     </Reference>
     <Reference Include="Sage.Platform.WebPortal.Design, Version=7.2.1.1553, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.Platform.WebPortal.Design.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.Platform.WebPortal.Design.dll</HintPath>
     </Reference>
     <Reference Include="Sage.SalesLogix, Version=7.2.1.1530, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.SalesLogix.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.SalesLogix.dll</HintPath>
     </Reference>
     <Reference Include="Sage.SalesLogix.Plugins, Version=7.2.1.1530, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Debug\Sage.SalesLogix.Plugins.dll</HintPath>
+      <HintPath>$(SlxPath)\Sage.SalesLogix.Plugins.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -203,7 +205,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
+	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">

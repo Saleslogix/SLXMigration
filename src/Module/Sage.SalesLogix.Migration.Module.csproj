@@ -45,7 +45,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\Module\</OutputPath>
+    <OutputPath>..\bin\Debug\Module\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -289,10 +289,10 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>rd "$(SolutionDir)..\..\..\Debug\Migration\" /s /q
-md "$(SolutionDir)..\..\..\Debug\Migration\"
-copy "$(TargetDir)Sage.SalesLogix.Migration.*" "$(SolutionDir)..\..\..\Debug\Migration\" /y
-copy "$(SolutionDir)..\lib\*.dll" "$(SolutionDir)..\..\..\Debug\Migration\" /y</PostBuildEvent>
+    <PostBuildEvent>rd "$(SolutionDir)..\bin\Debug\Migration\" /s /q
+md "$(SolutionDir)..\bin\Debug\Migration\"
+copy "$(TargetDir)Sage.SalesLogix.Migration.*" "$(SolutionDir)..\bin\Debug\Migration\" /y
+copy "$(SolutionDir)..\lib\*.dll" "$(SolutionDir)..\bin\Debug\Migration\" /y</PostBuildEvent>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>

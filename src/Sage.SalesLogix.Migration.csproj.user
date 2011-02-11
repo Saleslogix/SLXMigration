@@ -3,4 +3,7 @@
   <PropertyGroup>
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>C:\Program Files (x86)\SalesLogix\ReferenceAssemblies\</ReferencePath>
+  </PropertyGroup>
 </Project>
