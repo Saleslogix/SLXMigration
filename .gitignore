@@ -1,0 +1,28 @@
+
+# Files created from DiffMerge
+*.BACKUP*
+*.BASE*
+*.LOCAL*
+*.REMOTE*
+*.BACKUP.*.xml
+*.BASE.*.xml
+*.LOCAL.*.xml
+*.REMOTE.*.xml
+*.orig
+
+# Model files that are auto-generated
+[Mm]odel[Ii]ndex.xml
+
+# Standard Deploy files
+[Mm]odel/[Dd]eployment
+
+# Visual Studio files
+*.suo
+*.cache
+*.obj
+*.pdb
+*.user
+obj/
+[Dd]ebug*/
+[Rr]elease*/
+src/_ReSharper.Sage.SalesLogix.Migration/
